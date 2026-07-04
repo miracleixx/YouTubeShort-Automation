@@ -1,0 +1,95 @@
+{
+  "name": "shorts-uploader",
+  "version": "2.0.0",
+  "description": "Professional AI-Powered YouTube Shorts Automation Suite",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "renderer:dev": "vite renderer-v2",
+    "renderer:build": "vite build renderer-v2",
+    "build": "npm run renderer:build",
+    "cli": "node --input-type=module < src/main.js",
+    "set-episode": "node -e \"require('./src/engine.cjs').setEpisode(process.argv[2])\" --",
+    "status": "node -e \"require('./src/engine.cjs').printStatus()\"",
+    "app:build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "setup": "node scripts/setup.js"
+  },
+  "build": {
+    "appId": "com.shorts.automation",
+    "productName": "Shorts Uploader Pro",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": false
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "renderer/assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "extraResources": [
+      "config/**",
+      "src/**"
+    ],
+    "files": [
+      "electron/**",
+      "renderer/**",
+      "src/**",
+      "config/**",
+      "scripts/**",
+      "node_modules/**",
+      "!node_modules/electron-builder/**",
+      "!node_modules/electron/**"
+    ],
+    "npmRebuild": false,
+    "buildDependenciesFromSource": false,
+    "forceCodeSigning": false
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "axios": "^1.6.7",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
+    "fluent-ffmpeg": "^2.1.3",
+    "framer-motion": "^12.38.0",
+    "fs-extra": "^11.2.0",
+    "googleapis": "^144.0.0",
+    "lucide-react": "^1.8.0",
+    "mime-types": "^2.1.35",
+    "msedge-tts": "^2.0.4",
+    "nanoid": "^3.3.7",
+    "node-cron": "^3.0.3",
+    "openai": "^6.34.0",
+    "playwright": "^1.44.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.5.0",
+    "uuid": "^9.0.1",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.4.27",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.0",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
+  },
+  "author": "Shorts Uploader Inc."
+}

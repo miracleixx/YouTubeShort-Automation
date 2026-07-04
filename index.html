@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shorts Uploader | Automate Your YouTube Channel</title>
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── BASE STYLES ─────────────────────────────────────────── */
+    :root {
+      --bg: #04040d;
+      --card: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.08);
+      --p: #8B5CF6;   /* Violet from app */
+      --c: #22D3EE;   /* Cyan from app */
+      --t1: #E2E8F0;
+      --t2: rgba(226, 232, 240, 0.6);
+      --t3: rgba(226, 232, 240, 0.3);
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --max-w: 1200px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--t1);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── UTILITIES ────────────────────────────────────────────── */
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      font-family: var(--font-body);
+      border: none;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--p), var(--c)); color: white; }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4); }
+    
+    .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--t1); }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: var(--t2); }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(139, 92, 246, 0.1);
+      color: var(--p);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    section { padding: 100px 0; }
+    .text-reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+    .text-reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── STICKY TOP BAR ────────────────────────────────────────── */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      background: rgba(4, 4, 13, 0.8);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+    .topbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: var(--t1);
+    }
+    .logo-text span { color: var(--p); }
+
+    /* ── HERO ─────────────────────────────────────────────────────── */
+    .hero { text-align: center; padding-top: 160px; overflow: hidden; }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 8vw, 76px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -3px;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 20px;
+      color: var(--t2);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; margin-bottom: 80px; }
+
+    /* ── HI-FI DASH MOCKUP ────────────────────────────────────────── */
+    .mockup-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      perspective: 1000px;
+    }
+    
+    .mockup-dashboard {
+      background: #050512;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 50px 100px -20px rgba(0,0,0,0.8);
+      aspect-ratio: 16/10;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      position: relative;
+    }
+
+    /* Mesh Background inside mockup */
+    .mockup-dashboard::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.15), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(34, 211, 238, 0.12), transparent 40%);
+      pointer-events: none;
+    }
+
+    .mockup-header-bar {
+      height: 44px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 1.25rem;
+      backdrop-filter: blur(20px);
+      z-index: 2;
+    }
+
+    .mockup-dots { display: flex; gap: 8px; margin-right: 2rem; }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    
+    .mockup-title-tag {
+       font-size: 10px;
+       font-weight: 700;
+       color: var(--t3);
+       letter-spacing: 2px;
+       text-transform: uppercase;
+       font-family: var(--font-mono);
+    }
+
+    .mockup-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .mockup-sidebar {
+      width: 200px;
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.25rem;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .sidebar-nav { list-style: none; }
+    .nav-item {
+      height: 36px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--t2);
+      transition: all 0.2s;
+    }
+    .nav-item.active {
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--p);
+      font-weight: 700;
+    }
+    .nav-icon { width: 16px; height: 16px; border: 1.5px solid currentColor; border-radius: 4px; opacity: 0.6; }
+
+    .mockup-content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .mockup-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .m-stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .m-stat-label { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
+    .m-stat-val { font-size: 22px; font-weight: 800; font-family: var(--font-display); color: var(--t1); }
+
+    .m-main-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .m-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .m-card-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+    .m-status-badge {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--c);
+      font-size: 10px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .m-queue-list { display: flex; flex-direction: column; gap: 12px; }
+    .m-queue-item {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.01);
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .m-queue-item.active {
+      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.04);
+    }
+
+    .m-item-icon { 
+      width: 42px; height: 42px; border-radius: 10px; 
+      background: linear-gradient(135deg, #1e1e3f, #0d0d24); 
+      display: flex; align-items: center; justify-content: center; font-size: 18px; 
+      border: 1px solid var(--border);
+    }
+    .m-item-content { flex: 1; }
+    .m-item-name { font-size: 14px; font-weight: 600; color: var(--t1); margin-bottom: 3px; }
+    .m-item-meta { font-size: 11px; color: var(--t3); font-family: var(--font-mono); }
+
+    .m-progress { margin-top: 14px; height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .m-progress-bar { height: 100%; background: linear-gradient(90deg, var(--p), var(--c)); width: 72%; }
+
+    /* ── REST OF THE SECTIONS ───────────────────────────────────────── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 60px; }
+    .step-card { text-align: left; position: relative; }
+    .step-icon {
+      width: 54px;
+      height: 54px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .icon-shape { width: 20px; height: 20px; background: var(--p); border-radius: 4px; }
+    .step-card h3 { font-family: var(--font-display); font-size: 22px; margin-bottom: 12px; }
+    .step-card p { color: var(--t2); }
+
+    .section-header { text-align: center; max-width: 600px; margin: 0 auto 60px; }
+    .section-header h2 { font-family: var(--font-display); font-size: 40px; margin-bottom: 16px; font-weight: 800; letter-spacing: -1px; }
+    
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+    .f-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+    .f-card:hover { border-color: var(--p); transform: translateY(-5px); background: rgba(255,255,255,0.05); }
+    .f-icon { width: 44px; height: 44px; margin-bottom: 24px; }
+    .f-card h4 { font-family: var(--font-display); font-size: 20px; margin-bottom: 12px; font-weight: 700; }
+    .f-card p { color: var(--t2); font-size: 15px; }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; margin-top: 60px; }
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .price-card.popular {
+      border-color: var(--p);
+      background: rgba(139, 92, 246, 0.05);
+      transform: scale(1.05);
+      box-shadow: 0 30px 60px -15px rgba(0,0,0,0.5);
+    }
+    .popular-badge {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--p);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .price-card h4 { color: var(--t2); font-weight: 600; font-size: 14px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 1px; }
+    .price-val { font-family: var(--font-display); font-size: 56px; font-weight: 800; margin-bottom: 8px; }
+    .price-val span { font-size: 18px; color: var(--t3); font-family: var(--font-body); }
+    .price-card p { font-size: 14px; color: var(--t2); margin-bottom: 32px; }
+    
+    .feature-list { list-style: none; margin-bottom: 40px; flex: 1; }
+    .feature-list li { margin-bottom: 16px; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+    .check { color: var(--c); font-weight: 800; }
+
+    .faq-container { max-width: 800px; margin: 60px auto 0; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 24px 0; }
+    .faq-trigger { 
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      background: none; border: none; color: white; cursor: pointer; text-align: left;
+      font-family: var(--font-display); font-size: 18px; font-weight: 700;
+    }
+    .faq-answer { 
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s;
+      color: var(--t2); font-size: 16px; line-height: 1.6;
+    }
+    .faq-answer.open { max-height: 300px; padding-top: 16px; }
+    .plus-icon { transition: transform 0.3s; }
+    .faq-trigger.active .plus-icon { transform: rotate(45deg); }
+
+    footer { border-top: 1px solid var(--border); padding: 80px 0 40px; }
+    .footer-top { display: flex; justify-content: space-between; margin-bottom: 60px; flex-wrap: wrap; gap: 40px; }
+    .footer-links { display: flex; gap: 32px; }
+    .footer-links a { color: var(--t3); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--t1); }
+    .copy { font-size: 13px; color: var(--t3); }
+
+    .shape-circle { border-radius: 50%; }
+    .shape-square { }
+    .shape-triangle { width:0; height:0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 20px solid var(--p); background:none; }
+
+    @media (max-width: 768px) {
+      .hero-ctas { flex-direction: column; width: 100%; }
+      .mockup-dashboard { aspect-ratio: auto; min-height: 500px; }
+      .mockup-sidebar { display: none; }
+      .price-card.popular { transform: scale(1); margin: 20px 0; }
+      .mockup-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="container">
+      <div class="logo-text">Shorts<span>Uploader</span></div>
+      <a href="#pricing" class="btn btn-primary" style="padding: 8px 20px; font-size: 14px">Get started</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="text-reveal">
+        <span class="badge">Windows Desktop App</span>
+        <h1>Automate your Shorts.<br>Upload while you sleep.</h1>
+        <p>The ultimate set-and-forget desktop uploader for YouTube creators. Powered by Claude AI, designed for explosive growth.</p>
+        <div class="hero-ctas">
+          <a href="#pricing" class="btn btn-primary">Get started — $6/mo</a>
+          <a href="#how-it-works" class="btn btn-outline" style="border:none">How it works ↓</a>
+        </div>
+
+        <!-- HI-FI MOCKUP -->
+        <div class="mockup-container">
+          <div class="mockup-dashboard">
+            <div class="mockup-header-bar">
+              <div class="mockup-dots">
+                <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
+              </div>
+              <div class="mockup-title-tag">Engine Status: Online — v2.0.4</div>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-sidebar">
+                <nav class="sidebar-nav">
+                  <li class="nav-item active"><div class="nav-icon"></div> Dashboard</li>
+                  <li class="nav-item"><div class="nav-icon"></div> Channels</li>
+                  <li class="nav-item"><div class="nav-icon"></div> Upload Queue</li>
+                  <li class="nav-item"><div class="nav-icon"></div> AI Settings</li>
+                  <li class="nav-item" style="margin-top: 4rem"><div class="nav-icon"></div> Support</li>
+                </nav>
+              </div>
+              <div class="mockup-content">
+                <div class="mockup-stats">
+                  <div class="m-stat-card">
+                    <div class="m-stat-label">Total Uploaded</div>
+                    <div class="m-stat-val">1,248</div>
+                  </div>
+                  <div class="m-stat-card">
+                    <div class="m-stat-label">Success Rate</div>
+                    <div class="m-stat-val">99.2%</div>
+                  </div>
+                  <div class="m-stat-card">
+                    <div class="m-stat-label">Active Channels</div>
+                    <div class="m-stat-val">4</div>
+                  </div>
+                </div>
+
+                <div class="m-main-card">
+                  <div class="m-card-header">
+                    <div class="m-card-title">Live Automation Session</div>
+                    <div class="m-status-badge">● Running</div>
+                  </div>
+                  <div class="m-queue-list">
+                    <div class="m-queue-item active">
+                      <div class="m-item-icon">🎬</div>
+                      <div class="m-item-content">
+                        <div class="m-item-name">spiderman-ragdoll-physics.mp4</div>
+                        <div class="m-item-meta">Uploading to "Gaming Hub" — 72%</div>
+                        <div class="m-progress"><div class="m-progress-bar"></div></div>
+                      </div>
+                    </div>
+                    <div class="m-queue-item">
+                      <div class="m-item-icon" style="opacity: 0.5">⏳</div>
+                      <div class="m-item-content">
+                        <div class="m-item-name" style="opacity: 0.6">gta5-funny-moments-04.mp4</div>
+                        <div class="m-item-meta">Queued for 19:00 UTC (Slot B)</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works">
+    <div class="container">
+      <div class="section-header text-reveal">
+        <span class="badge">Workflow</span>
+        <h2>Three steps to freedom.</h2>
+        <p>Shorts Uploader handles the entire pipeline so you don't have to.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step-card text-reveal">
+          <div class="step-icon">
+            <div class="icon-shape shape-triangle"></div>
+          </div>
+          <h3>1. Drop your videos</h3>
+          <p>Just drag and drop your edited .mp4 files into your designated channel folder. The app detects them instantly.</p>
+        </div>
+        <div class="step-card text-reveal" style="transition-delay: 0.1s">
+          <div class="step-icon">
+            <div class="icon-shape shape-circle"></div>
+          </div>
+          <h3>2. AI Magic</h3>
+          <p>Claude AI analyzes your filenames to write viral hooks and SEO descriptions. Uploads are scheduled for peak UTC hours.</p>
+        </div>
+        <div class="step-card text-reveal" style="transition-delay: 0.2s">
+          <div class="step-icon">
+            <div class="icon-shape shape-square"></div>
+          </div>
+          <h3>3. Go Live</h3>
+          <p>The app performs human-like browser uploads while you work or sleep. Your channel stays active 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" style="background:#0c0c0e">
+    <div class="container">
+      <div class="section-header text-reveal">
+        <span class="badge">Features</span>
+        <h2>Built for power creators.</h2>
+      </div>
+
+      <div class="feature-grid">
+        <div class="f-card text-reveal">
+          <div class="f-icon icon-shape shape-circle" style="background:#3b82f6; width:30px; height:30px"></div>
+          <h4>Claude AI Content</h4>
+          <p>Forget writer's block. Claude AI writes catchy titles and descriptions designed to stop the scroll.</p>
+        </div>
+        <div class="f-card text-reveal">
+          <div class="f-icon icon-shape shape-square" style="background:#f59e0b; width:30px; height:30px"></div>
+          <h4>Smart Scheduling</h4>
+          <p>Posts at peak times automatically. Just set your preferred time slots and let the bot handle the timing.</p>
+        </div>
+        <div class="f-card text-reveal">
+          <div class="f-icon icon-shape shape-triangle" style="background:#10b981; margin-top:10px"></div>
+          <h4>Multi-Channel</h4>
+          <p>Switch between accounts with one click. Each channel keeps its own settings, cookies, and folder.</p>
+        </div>
+        <div class="f-card text-reveal">
+          <div class="f-icon icon-shape shape-circle" style="background:#ef4444; width:30px; height:30px"></div>
+          <h4>No API Limits</h4>
+          <p>Uses browser automation to bypass harsh YouTube API quotas. Upload up to 15 Shorts per day per channel.</p>
+        </div>
+        <div class="f-card text-reveal">
+          <div class="f-icon icon-shape shape-square" style="background:#8b5cf6; width:30px; height:30px"></div>
+          <h4>Episode Tracker</h4>
+          <p>Making a series? The app auto-increments episode numbers in your titles and tags automatically.</p>
+        </div>
+        <div class="f-card text-reveal">
+          <div class="f-icon icon-shape shape-triangle" style="background:#ec4899; margin-top:10px"></div>
+          <h4>System Tray Mode</h4>
+          <p>Runs silently in the background. Does not interfere with your gaming or work sessions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing">
+    <div class="container">
+      <div class="section-header text-reveal">
+        <span class="badge">Pricing</span>
+        <h2>Start automating today.</h2>
+        <p>Cancel anytime. No long-term contracts.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Basic -->
+        <div class="price-card text-reveal">
+          <h4>Basic</h4>
+          <div class="price-val">$6<span>/mo</span></div>
+          <p>For small creators starting out.</p>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> 1 YouTube channel</li>
+            <li><span class="check">✓</span> 6 uploads per day</li>
+            <li><span class="check">✓</span> AI titles & hooks</li>
+            <li><span class="check">✓</span> Smart scheduling</li>
+          </ul>
+          <a href="#basic-checkout" class="btn btn-outline" style="width:100%">Get started</a>
+        </div>
+        
+        <!-- Pro -->
+        <div class="price-card popular text-reveal">
+          <div class="popular-badge">Most Popular</div>
+          <h4>Pro</h4>
+          <div class="price-val">$10<span>/mo</span></div>
+          <p>For serious automation grinders.</p>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> 5 YouTube channels</li>
+            <li><span class="check">✓</span> 15 uploads per day</li>
+            <li><span class="check">✓</span> AI power (hooks + desc)</li>
+            <li><span class="check">✓</span> Priority support</li>
+            <li><span class="check">✓</span> Multi-folder monitoring</li>
+          </ul>
+          <a href="#pro-checkout" class="btn btn-primary" style="width:100%">Get started</a>
+        </div>
+
+        <!-- Unlimited -->
+        <div class="price-card text-reveal">
+          <h4>Unlimited</h4>
+          <div class="price-val">$25<span>/mo</span></div>
+          <p>For agencies and power users.</p>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> Unlimited channels</li>
+            <li><span class="check">✓</span> Unlimited uploads</li>
+            <li><span class="check">✓</span> White-label ready</li>
+            <li><span class="check">✓</span> Early access features</li>
+            <li><span class="check">✓</span> Premium direct support</li>
+          </ul>
+          <a href="#unlimited-checkout" class="btn btn-outline" style="width:100%">Get started</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-header text-reveal">
+        <span class="badge">FAQ</span>
+        <h2>Common Questions</h2>
+      </div>
+
+      <div class="faq-container text-reveal">
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Does this work on Mac?</span>
+            <div class="plus-icon">+</div>
+          </button>
+          <div class="faq-answer">Currently Windows only. A Mac version is in development and will be released as a free update for existing subscribers soon.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Do I need a YouTube API key?</span>
+            <div class="plus-icon">+</div>
+          </button>
+          <div class="faq-answer">No. The app uses browser automation to handle uploads, which means you don't need to deal with complex Google Cloud setups or restrictive API quota limits.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Will my YouTube channel get banned?</span>
+            <div class="plus-icon">+</div>
+          </button>
+          <div class="faq-answer">Shorts Uploader is built with safety in mind. It mimics human behavior with randomized delays, natural typing speeds, and stealth browser profiles, making it indistinguishable from manual work.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>What happens if my internet goes down?</span>
+            <div class="plus-icon">+</div>
+          </button>
+          <div class="faq-answer">The app includes a built-in connectivity monitor. It detects when you go offline, pauses the upload, and automatically resumes exactly where it left off once the connection is restored.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>Can I use this for multiple niches?</span>
+            <div class="plus-icon">+</div>
+          </button>
+          <div class="faq-answer">Yes! The Pro and Unlimited plans are designed for creators managing multiple niches. You can set up isolated environments for each channel with unique folders, schedules, and AI prompt styles.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <div class="logo-text" style="font-size: 24px; margin-bottom: 12px">Shorts<span>Uploader</span></div>
+          <p style="font-size: 14px; color:var(--t3)">Automate your workflow. Scale your reach.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="mailto:support@shortsuploader.com">Contact Support</a>
+        </div>
+      </div>
+      <div class="copy">
+        © 2025 Shorts Uploader. Built for creators.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // FAQ Accordion
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const answer = trigger.nextElementSibling;
+        const isActive = trigger.classList.contains('active');
+        
+        // Close all
+        document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.faq-trigger').forEach(t => t.classList.remove('active'));
+        
+        if (!isActive) {
+          answer.classList.add('open');
+          trigger.classList.add('active');
+        }
+      });
+    });
+
+    // Scroll Reveal Intersection Observer
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.text-reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+# Environment & secrets
+.env
+config/config.json
+config/google-service-account.json
+data/*.json
+data/cookies*.json
+data/queue.json
+data/hashes.json
+data/quota.json
+data/schedule.json
+data/license.json
+data/machine.json
+data/channels.json
+data/usedBackgrounds.json
+
+# Build & Output
+dist/
+*.exe
+*.msi
+*.dmg
+out/
+release/
+
+# Large diagnostic files
+playwright-recordings/
+full_codebase.md
+
+# Runtime output
+logs/
+screenshots/
+videos/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# UI & Feature Redesign folders
+Short Editor/
+ui_redesign_pack/
+renderer-v2/node_modules/
+
+# Manual Scratch & Test Files
+scratch_*.mjs
+test_*.mjs
+scripts/test_*.js
+scripts/test_*.mjs
+debug_*.md
+UI_Redesign_Master.md
+video_factory_setup.md
+test*.mp3
+
+# Runtime artifacts
+data/captions/
+data/tts/
+data/voice-tests/
+data_backup/
+
+# OS
+.DS_Store
+Thumbs.db
+.aider*
